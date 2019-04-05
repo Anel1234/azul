@@ -1,0 +1,6 @@
+.tile {
+    /* background-color: whitesmoke; */
+    border: 1px dotted black;
+    height:20px;
+    width:20px;
+}
