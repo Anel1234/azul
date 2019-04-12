@@ -6,11 +6,11 @@ import { IAppState } from './interfaces/States';
 import Board from './components/Board/Board';
 import Factory from './components/Factory/Factory';
 import Tile from './components/Tile/Tile';
+import HTML5Backend from 'react-dnd-html5-backend'
+import { DragDropContext } from 'react-dnd'
+import Test from './components/Test';
+import Droppable from './components/Droppable';
 
-
-
-// type MyProps = {};
-// type MyState = { TileBag: Tile[] };
 
 class App extends Component<IAppProps, IAppState> {
   constructor(props: IAppProps) {
@@ -38,25 +38,27 @@ class App extends Component<IAppProps, IAppState> {
   render() {
     return (
       <div className="App">
-        <div className="Boards">
-          {this.state.Boards.map((board, i) => {
-            return <Board key={i}></Board>
-          })}
-        </div>
+        <Test></Test>
+        <Droppable val={5}></Droppable>
         <div className="Factories">
           {this.state.Factories.map((factory, i) => {
             return <Factory key={i} index={i} FactoryTiles={factory.props.FactoryTiles} updateTileColor={this.updateTileColor}></Factory>
+          })}
+        </div>
+        <div className="Boards">
+          {this.state.Boards.map((board, i) => {
+            return <Board key={i}></Board>
           })}
         </div>
       </div>
     );
   }
 
-  createTileBag(): Tile[] {
+  createTileBag(): any[] {
     let tileBag = []
     for (let i = 0; i < 5; i++) {
 
-      let tile = new Tile({Type: i, Color: Type[i], updateTileColor: this.updateTileColor });
+      let tile = new Tile({ Type: i, Color: Type[i], updateTileColor: this.updateTileColor, isPlaced: false });
 
       for (let j = 0; j < 20; j++) {
         tileBag.push(tile);
@@ -91,13 +93,13 @@ class App extends Component<IAppProps, IAppState> {
 
   }
 
-  selectTilesFromBag(): Tile[] {
+  selectTilesFromBag(): any[] {
 
-    let tiles: Tile[] = this.state.TileBag;
-    let factoryTiles: Tile[] = [];
+    let tiles: any[] = this.state.TileBag;
+    let factoryTiles: any[] = [];
 
     for (let i = 0; i < 4; i++) {
-      let tile: Tile = tiles[tiles.length - 1];
+      let tile: any = tiles[tiles.length - 1];
       factoryTiles.push(tile);
       tiles.pop()
     }
@@ -105,15 +107,23 @@ class App extends Component<IAppProps, IAppState> {
     return factoryTiles;
   }
 
-  updateTileColor = (tile: Tile, mouseEnter: boolean, factoryIndex: number) => {
+  updateTileColor = (tile: any, mouseEnter: boolean, factoryIndex: number) => {
 
     console.log(factoryIndex);
 
-    let factoryTiles : Tile[] = [];
+    this.setState({
+      TileBag: this.state.TileBag.map(_tile => (1 == 1) ? _tile : tile)
+      //Factories: this.state.Factories.map(factory => (factory.props.index == factoryIndex) ? {})
+      //Factories: this.state.Factories.map(factory => (factory.props.index == factoryIndex ? {...factory.props.FactoryTiles, factoryTiles}: factory.props.FactoryTiles))
+    });
+
+    console.log(this.state.TileBag);
+
+    let factoryTiles: any[] = [];
 
     this.state.Factories[factoryIndex].props.FactoryTiles.forEach((d) => {
-      if(tile.props.Color == d.props.Color) {
-        if(mouseEnter == true) {
+      if (tile.props.Color == d.props.Color) {
+        if (mouseEnter == true) {
           tile.props.Color == "Black";
         }
         else {
@@ -128,12 +138,22 @@ class App extends Component<IAppProps, IAppState> {
 
     console.log(factoryTiles);
 
-    // this.setState(prevState => ({
-    //   Factories: {
-    //     ...prevState.Factories,
-    //     factoryTiles
+
+    // let factories : Factory[] = [];
+    // this.state.Factories.forEach((factory) => {
+    //   if(factory.props.index == factoryIndex) {
+    //     let newFactory = Object.assign({}, factory)
+    //     newFactory.props.FactoryTiles = factoryTiles;
+    //     factory.props.FactoryTiles = factoryTiles;
     //   }
-    // }))
+    // });
+
+    // this.setState({
+    //   Factories: this.state.Factories.map(factory => (factory.props.index == factoryIndex ? {...factory.props.FactoryTiles, factoryTiles}: factory.props.FactoryTiles))
+    // });
+
+    this.setState(prevState => ({
+    }))
 
     // console.log("it works");
   }
@@ -147,4 +167,5 @@ class App extends Component<IAppProps, IAppState> {
 
 }
 
-export default App;
+export default DragDropContext(HTML5Backend)(App);
+//export default App;
