@@ -15,13 +15,7 @@ class Tile extends Component<ITileProps> {
         // }
     }
 
-    //{Type[this.props.Type]}
-
     render() {
-        // return (
-        //     <div className="tile" onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} style={{ backgroundColor: this.props.Color }}>{this.props.Type}</div>
-        // )
-
         const { isDragging, connectDragSource, src } = this.props
         return connectDragSource(
             <div
@@ -39,17 +33,17 @@ class Tile extends Component<ITileProps> {
     }
 
 
-    mouseEnter = async () => {
+    mouseEnter = () => {
         if (!this.props.isPlaced) {
-            await this.props.updateTileColor(this, true);
+            this.props.updateTileColor(this, true, this.props.FactoryIndex);
         }
 
         //this.props.updateTileColor(this, true, this.props.FactoryIndex)
     }
 
-    mouseLeave = async () => {
+    mouseLeave = () => {
         if (!this.props.isPlaced) {
-            await this.props.updateTileColor(this, false);
+            this.props.updateTileColor(this, false, this.props.FactoryIndex);
         }
         //this.props.updateTileColor(this, false, this.props.FactoryIndex)
     }
@@ -61,15 +55,17 @@ const Types = {
 }
 
 const itemSource = {
-    beginDrag(props: ITileProps) {
-        /* code here */
-        console.log("start dragging");
-        return { "Type": props.Type, "CountOfType": props.getTilesOfTypeInFactory(props.Type), };
+    canDrag(props: ITileProps) {
+        return !props.isPlaced;
     },
-    endDrag(props: ITileProps) {
-        console.log("end dragging")
-        /* code here */
-    }
+    beginDrag(props: ITileProps) {
+        return { "Type": props.Type, "CountOfType": props.getTilesOfTypeInFactory(props.Type) };
+    },
+    endDrag(props: ITileProps, monitor: any) {
+        if(monitor.didDrop()) {
+            props.updateTilesInFactory(props.Type);
+        }
+    },
 }
 
 let collect = (connect: any, monitor: any) => {

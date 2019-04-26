@@ -10,21 +10,21 @@ class Board extends Component<IBoardProps, IBoardState> {
   constructor(props: IBoardProps) {
     super(props);
 
-    this.state = {
-      Value: 0,
-      PlacingTiles: [[]],
-      PlacedTiles: [[]],
-      BrokenTiles: []
-    }
+    // this.state = {
+    //   Value: 0,
+    //   PlacingTiles: [[]],
+    //   PlacedTiles: [[]],
+    //   BrokenTiles: []
+    // }
   }
 
-  componentWillMount() {
-    this.setState({
-      PlacingTiles: this.createEmptyPlacingTiles(),
-      PlacedTiles: this.createEmptyPlacedTiles(),
-      BrokenTiles: this.createEmptyBrokenTiles()
-    })
-  }
+  // componentWillMount() {
+  //   this.setState({
+  //     PlacingTiles: this.createEmptyPlacingTiles(),
+  //     PlacedTiles: this.createEmptyPlacedTiles(),
+  //     BrokenTiles: this.createEmptyBrokenTiles()
+  //   })
+  // }
 
 
   render() {
@@ -33,13 +33,13 @@ class Board extends Component<IBoardProps, IBoardState> {
         <table className="boardGrid">
           <tbody>
             {
-              this.state.PlacingTiles.map((row, i) => {
+              this.props.PlacingTiles.map((row, i) => {
                 return (
                   <tr key={i}>
                     {row.map((tile: any, j) => {
                       return (
                         <td key={j} className="tileHolder">
-                          <TileSquare Tile={tile.props} updateBoard={this.updateBoard} row={i}></TileSquare>
+                          <TileSquare isPlacedTile={false} Board={this} Tile={tile.props} updateBoard={this.updateBoard} row={i}></TileSquare>
                         </td>
                       )
                     })}
@@ -52,13 +52,13 @@ class Board extends Component<IBoardProps, IBoardState> {
         <table className="boardGrid">
           <tbody>
             {
-              this.state.PlacedTiles.map((row, i) => {
+              this.props.PlacedTiles.map((row, i) => {
                 return (
                   <tr key={i}>
                     {row.map((tile: any, j) => {
                       return (
                         <td key={j} className="tileHolder">
-                          <TileSquare Tile={tile.props} updateBoard={this.updateBoard} row={i}></TileSquare>
+                          <TileSquare isPlacedTile={true} Board={this} Tile={tile.props} updateBoard={this.updateBoard} row={i}></TileSquare>
                         </td>
                       )
                     })}
@@ -72,10 +72,10 @@ class Board extends Component<IBoardProps, IBoardState> {
           <tbody>
             <tr>
               {
-                this.state.BrokenTiles.map((tile: any, i) => {
+                this.props.BrokenTiles.map((tile: any, i) => {
                   return (
                     <td key={i} className="tileHolder">
-                      <TileSquare Tile={tile.props} updateBoard={this.updateBoard} row={5}></TileSquare>
+                      <TileSquare isPlacedTile={false} Board={this} Tile={tile.props} updateBoard={this.updateBoard} row={5}></TileSquare>
                     </td>
                   )
                 })
@@ -89,11 +89,9 @@ class Board extends Component<IBoardProps, IBoardState> {
 
   updateBoard = (tile: any, rowNumber: number) => {
 
-    let updateRow: any[] = this.state.BrokenTiles;
+    let updateRow: any[] = this.props.BrokenTiles;
 
     if (rowNumber == 5) {
-
-      console.log(tile);
 
       for (let i = 0; i < tile.CountOfType; i++) {
         updateRow.shift();
@@ -107,8 +105,8 @@ class Board extends Component<IBoardProps, IBoardState> {
     else {
 
       let placingRow = [];
-      let brokenRow: any[] = this.state.BrokenTiles;
-      let placingTiles = this.state.PlacingTiles;
+      let brokenRow: any[] = this.props.BrokenTiles;
+      let placingTiles = this.props.PlacingTiles;
       let totalTiles: number = tile.CountOfType;
 
       placingTiles[rowNumber].forEach((placedTile) => {
@@ -167,6 +165,16 @@ class Board extends Component<IBoardProps, IBoardState> {
 
     //console.log(placingTiles)
     return placingTiles;
+  }
+
+  createEmptyPlacingRow = (length: number) => {
+    let tileRow = [];
+
+    for(let i = 0; i < length; i++) {
+      tileRow.push(new Tile({ isPlaced: false, Type: 5, Color: Type[5] }));
+    }
+
+    return tileRow;
   }
 
   createEmptyPlacedTiles = () => {

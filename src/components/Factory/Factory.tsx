@@ -6,25 +6,24 @@ import TileSquare from '../TileSquare/TileSquare';
 import { IFactoryState } from '../../interfaces/States';
 
 
-class Factory extends React.Component<IFactoryProps, IFactoryState> {
+class Factory extends React.Component<IFactoryProps> {
     constructor(props: IFactoryProps) {
         super(props);
 
-        this.state = {
-            Tiles: props.FactoryTiles
-        };
+        // this.updateTilesInFactory = this.updateTilesInFactory.bind(this);
 
     }
     render() {
         return (
             <div className="Factory">
-                {this.state.Tiles.map((tile, i) => {
+                {this.props.FactoryTiles.map((tile, i) => {
                     return (
                         <Tile
                             Type={tile.props.Type}
                             Color={tile.props.Color}
-                            updateTileColor={this.updateTileColor}      
-                            getTilesOfTypeInFactory={this.getTilesOfTypeInFactory}                     
+                            updateTileColor={this.props.updateTileColor}
+                            getTilesOfTypeInFactory={this.getTilesOfTypeInFactory}
+                            updateTilesInFactory={this.updateTilesInFactory}
                             FactoryIndex={this.props.index}
                             // mouseEnter={tile.props.mouseEnter}
                             // mouseLeave={tile.props.mouseLeave}
@@ -40,7 +39,7 @@ class Factory extends React.Component<IFactoryProps, IFactoryState> {
 
         let tiles: any[] = [];
 
-        this.state.Tiles.forEach((_tile) => {
+        this.props.FactoryTiles.forEach((_tile) => {
             if (_tile.props.Type == tile.props.Type) {
                 if (mouseEnter) {
                     tiles.push(new Tile({ FactoryIndex: this.props.index, Type: tile.props.Type, Color: "Grey", updateTileColor: this.updateTileColor }));
@@ -64,13 +63,30 @@ class Factory extends React.Component<IFactoryProps, IFactoryState> {
 
         let count: number = 0;
 
-        this.state.Tiles.forEach(tile => {
-            if(tile.props.Type == type) {
+        this.props.FactoryTiles.forEach(tile => {
+            if (tile.props.Type == type) {
                 count++;
             }
         })
 
         return count;
+    }
+
+    updateTilesInFactory = (type: Type) => {
+
+        let extraTiles: any =[];
+        let isExcess = this.props.isExcess;
+
+        this.props.FactoryTiles.forEach((tile) => {
+            if (tile.props.Type != type) {
+                extraTiles.push(tile);
+            }
+        })
+
+        this.props.updateFactoryTiles(extraTiles, this.props.index, isExcess, type);
+        // this.props.updateExcessFactoryTiles(extraTiles);
+        // this.setState({Tiles: factoryTiles});
+
     }
 
 }
